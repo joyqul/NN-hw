@@ -2,6 +2,7 @@
 #-*- conding: utf-8-*-
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def learn(n_vec_0, n_vec_1, train_data, learn_rate):
     d_of_p0 = (int)(np.inner(n_vec_0, train_data[0]))
@@ -16,6 +17,25 @@ def learn(n_vec_0, n_vec_1, train_data, learn_rate):
         return n_vec_0, n_vec_1, True
     else:
         return n_vec_0, n_vec_1, False
+
+
+def getdata(train_data):
+    data0_x = []
+    data0_y = []
+    data1_x = []
+    data1_y = []
+
+    for i in train_data:
+        point = [(i[0].tolist())[0][0], (i[0].tolist())[0][1]]
+        if i[1] == 0:
+            data0_x.append(point[0])
+            data0_y.append(point[1])
+        else:
+            data1_x.append(point[0])
+            data1_y.append(point[1])
+
+    return data0_x, data0_y, data1_x, data1_y
+
 
 if __name__ == '__main__':
     #train_data = [[0, 0, 0], [1, 0, 1], [0, 1, 1], [1, 1, 0]]
@@ -43,4 +63,16 @@ if __name__ == '__main__':
         if over:
             break
     
-    print n_vec_0, n_vec_1
+    boundary = (n_vec_0 - n_vec_1).tolist()
+    a = (float)(boundary[0][0])/boundary[0][1] * (-1)
+    b = (float)(boundary[0][2])/boundary[0][1] * (-1)
+    
+    x_data = [x/10.0 for x in xrange(-5 , 15)]
+    y_data = [a*x + b for x in x_data]
+    
+    c0_px, c0_py, c1_px, c1_py = getdata(train_data)
+    plt.axis([-0.5, 1.5, -0.5, 1.5])
+    plt.plot(x_data, y_data)
+    plt.plot(c0_px, c0_py, 'ro')
+    plt.plot(c1_px, c1_py, 'go')
+    plt.show()
