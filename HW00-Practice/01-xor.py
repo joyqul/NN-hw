@@ -36,6 +36,20 @@ def getdata(train_data):
 
     return data0_x, data0_y, data1_x, data1_y
 
+def plot(boundary):
+    a = (float)(boundary[0][0])/boundary[0][1] * (-1)
+    b = (float)(boundary[0][2])/boundary[0][1] * (-1)
+    
+    x_data = [x/10.0 for x in xrange(-5 , 15)]
+    y_data = [a*x + b for x in x_data]
+    
+    c0_px, c0_py, c1_px, c1_py = getdata(train_data)
+    plt.axis([-0.5, 1.5, -0.5, 1.5])
+    plt.plot(x_data, y_data)
+    plt.plot(c0_px, c0_py, 'ro')
+    plt.plot(c1_px, c1_py, 'go')
+    plt.show()
+    
 
 if __name__ == '__main__':
     #train_data = [[0, 0, 0], [1, 0, 1], [0, 1, 1], [1, 1, 0]]
@@ -64,15 +78,4 @@ if __name__ == '__main__':
             break
     
     boundary = (n_vec_0 - n_vec_1).tolist()
-    a = (float)(boundary[0][0])/boundary[0][1] * (-1)
-    b = (float)(boundary[0][2])/boundary[0][1] * (-1)
-    
-    x_data = [x/10.0 for x in xrange(-5 , 15)]
-    y_data = [a*x + b for x in x_data]
-    
-    c0_px, c0_py, c1_px, c1_py = getdata(train_data)
-    plt.axis([-0.5, 1.5, -0.5, 1.5])
-    plt.plot(x_data, y_data)
-    plt.plot(c0_px, c0_py, 'ro')
-    plt.plot(c1_px, c1_py, 'go')
-    plt.show()
+    plot(boundary)
