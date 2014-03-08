@@ -5,33 +5,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class linear_perceptron:
-    def __init__(self, train_data_f):
+    def __init__(self, train_data_f, learn_rate = 1):
         self.train_data_f = train_data_f
+        self.learn_rate = learn_rate
+        self.train_data = []
+        # boundary
+        self.n_vec = np.matrix([0, 0, 0])
         
     def train(self):
         # open train_data
-        train_f = open("train_data.in", "r")
+        train_f = open(self.train_data_f, "r")
     
-        train_data = []
         for line in train_f:
             data = []
             for x in line.split():
                 data.append(int(x))
-            train_data.append([np.matrix([data[0], data[1], 1]), data[2]])
+            self.train_data.append([np.matrix([data[0], data[1], 1]), data[2]])
         
-        # boundary
-        n_vec = np.matrix([0, 0, 0])
-        learn_rate = 1
-    
         # record last change
-        data_len = len(train_data)
+        data_len = len(self.train_data)
         ch = data_len - 1
         over = False
     
         while (over == False):
             for i in xrange(0, data_len):
-                n_vec, changed = self.learn(n_vec, train_data[i], learn_rate)
-                if changed:
+                if (self.learn(self.train_data[i])):
                     ch = i
                 elif ch == i:
                     over = True
@@ -39,54 +37,54 @@ class linear_perceptron:
             if over:
                 break
         
-        boundary = n_vec.tolist()
-        self.plot(boundary, train_data)
+        self.boundary = self.n_vec.tolist()
 
-    def learn(self, n_vec, train_data, learn_rate):
-        d_of_p = (int)(np.inner(n_vec, train_data[0]))
+    def learn(self, train_data):
+        d_of_p = (int)(np.inner(self.n_vec, train_data[0][0]))
+
         if train_data[1] == 0 and d_of_p <= 0:
-            n_vec = n_vec + learn_rate*train_data[0]
-            return n_vec, True
+            self.n_vec = self.n_vec + self.learn_rate*train_data[0]
+            return True
         elif train_data[1] == 1 and d_of_p >= 0:
-            n_vec = n_vec - learn_rate*train_data[0]
-            return n_vec, True
+            self.n_vec = self.n_vec - self.learn_rate*train_data[0]
+            return True
         else:
-            return n_vec, False
+            return False
     
     
-    def getdata(self, train_data):
-        data0_x = []
-        data0_y = []
-        data1_x = []
-        data1_y = []
+    def getdata(self):
+        self.data0_x = []
+        self.data0_y = []
+        self.data1_x = []
+        self.data1_y = []
     
-        for i in train_data:
+        for i in self.train_data:
             point = [(i[0].tolist())[0][0], (i[0].tolist())[0][1]]
             if i[1] == 0:
-                data0_x.append(point[0])
-                data0_y.append(point[1])
+                self.data0_x.append(point[0])
+                self.data0_y.append(point[1])
             else:
-                data1_x.append(point[0])
-                data1_y.append(point[1])
+                self.data1_x.append(point[0])
+                self.data1_y.append(point[1])
     
-        return data0_x, data0_y, data1_x, data1_y
-    
-    def plot(self, boundary, train_data):
-        a = (float)(boundary[0][0])/boundary[0][1] * (-1)
-        b = (float)(boundary[0][2])/boundary[0][1] * (-1)
+    def plot(self):
+        a = (float)(self.boundary[0][0])/self.boundary[0][1] * (-1)
+        b = (float)(self.boundary[0][2])/self.boundary[0][1] * (-1)
         
         x = np.linspace(-5, 15, 200)
         y = a*x + b
         
-        c0_px, c0_py, c1_px, c1_py = self.getdata(train_data)
+        self.getdata()
+
         plt.axis([-0.5, 1.5, -0.5, 1.5])
         plt.plot(x, y)
-        plt.plot(c0_px, c0_py, 'ro')
-        plt.plot(c1_px, c1_py, 'go')
+        plt.plot(self.data0_x, self.data0_y, 'ro')
+        plt.plot(self.data1_x, self.data1_y, 'go')
         plt.show()
         
     
 
 if __name__ == '__main__':
-    x = linear_perceptron("asdf")
+    x = linear_perceptron("train_data.in")
     x.train()
+    x.plot()
